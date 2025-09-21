@@ -28,9 +28,22 @@ class PostService implements PostServiceInterface
 
     public function create(array $data): Post
     {
-        $data['user_id'] = Auth::id();
+        $userId = Auth::id();
 
-        return $this->posts->create($data);
+        if (! $userId) {
+            throw new \Exception('User not authenticated');
+        }
+
+        $data['user_id'] = $userId;
+
+        // Ensure we have at least some data
+        if (empty($data)) {
+            $data = ['user_id' => $userId];
+        }
+
+        $post = Post::create($data);
+
+        return $post;
     }
 
     public function update($id, array $data): ?Post

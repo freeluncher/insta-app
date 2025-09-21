@@ -113,12 +113,39 @@
                   <span class="post-location" v-if="post.location">{{ post.location }}</span>
                 </div>
               </div>
-              <button class="post-menu-btn" @click="togglePostMenu(post.id)">
+              <button class="post-menu-btn" @click.stop="togglePostMenu(post.id)">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="12" r="1"/>
                   <circle cx="19" cy="12" r="1"/>
                   <circle cx="5" cy="12" r="1"/>
                 </svg>
+              </button>
+            </div>
+
+            <!-- Post Menu Dropdown -->
+                        <!-- Post Menu Dropdown -->
+            <div v-if="isMenuVisible(post.id)" class="post-menu-dropdown" @click.stop>
+              <button
+                v-if="post.user.id === authStore.user?.id"
+                class="menu-item delete-item"
+                @click="deleteUserPost(post.id)"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Delete Post
+              </button>
+              <button class="menu-item">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                </svg>
+                Share
+              </button>
+              <button class="menu-item">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                </svg>
+                Save
               </button>
             </div>
 
@@ -269,12 +296,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import CreatePostModal from '../../components/CreatePostModal.vue'
 import { useAuthStore } from '../../stores/auth'
 import {
   getPosts,
+  deletePost,
   likePost,
   unlikePost,
   getLikesCount,
@@ -298,6 +326,14 @@ const posts = ref([])
 const showCreatePostModal = ref(false)
 const commentRefs = ref({})
 const expandedComments = reactive({})
+const showPostMenu = reactive({})
+
+// Computed property for menu visibility
+const isMenuVisible = computed(() => {
+  return (postId) => {
+    return showPostMenu[postId] || false
+  }
+})
 
 // Navigation tabs
 const navigationTabs = ref([
@@ -412,8 +448,23 @@ const viewStory = (story) => {
 }
 
 const togglePostMenu = (postId) => {
-  // Toggle post options menu
-  console.log('Toggle post menu:', postId)
+  showPostMenu[postId] = !showPostMenu[postId]
+}
+
+const deleteUserPost = async (postId) => {
+  if (!confirm('Are you sure you want to delete this post?')) {
+    return
+  }
+
+  try {
+    await deletePost(postId)
+    // Remove post from local state
+    posts.value = posts.value.filter(post => post.id !== postId)
+    showPostMenu[postId] = false
+  } catch (error) {
+    console.error('Error deleting post:', error)
+    alert('Failed to delete post. Please try again.')
+  }
 }
 
 const changeImage = (postId, imageIndex) => {
@@ -646,9 +697,22 @@ const fetchPosts = async () => {
   }
 }
 
+const closeAllMenus = () => {
+  Object.keys(showPostMenu).forEach(id => {
+    showPostMenu[id] = false
+  })
+}
+
 // Lifecycle
 onMounted(() => {
   fetchPosts()
+
+  // Add click outside listener to close menus
+  document.addEventListener('click', closeAllMenus)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeAllMenus)
 })
 
 const closeCreatePostModal = () => {
@@ -900,14 +964,16 @@ const onPostCreated = (newPost) => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   border: 1px solid rgba(226, 232, 240, 0.5);
+  position: relative !important;
 }
 
 /* Post Header */
 .post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 1rem !important;
+  position: relative !important; /* Added for dropdown positioning */
 }
 
 .post-user-info {
@@ -961,6 +1027,52 @@ const onPostCreated = (newPost) => {
 .post-menu-btn svg {
   width: 16px;
   height: 16px;
+}
+
+/* Post Menu Dropdown */
+.post-menu-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menu-item:hover {
+  background: #f3f4f6;
+}
+
+.menu-item svg {
+  width: 16px;
+  height: 16px;
+}
+
+.delete-item {
+  color: #ef4444;
+}
+
+.delete-item:hover {
+  background: #fef2f2;
 }
 
 /* Post Image */

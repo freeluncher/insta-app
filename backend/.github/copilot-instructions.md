@@ -202,3 +202,28 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
 - To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
 </laravel-boost-guidelines>
+
+### Commit Message Guidelines
+
+Use the commit format in accordance with the following **Conventional Commits**:
+
+🔹 **General types**
+- `feat`: addition of a new feature.
+  - example: `feat(auth): add user registration API`
+- `fix`: bug fix.
+  - example: `fix(post): correct image upload validation`
+- `docs`: documentation update.
+  - example: `docs(readme): update setup instructions`
+- `style`: code appearance/format changes (without changing logic).
+  - example: `style(ui): update button colors`
+- `refactor`: code refactoring without changing features.
+  - example: `refactor(api): optimize query for feed`
+- `test`: add or improve tests.
+  - example: `test(auth): add unit test for login`
+- `chore`: minor tasks (config, package, CI/CD).
+  - example: `chore(deps): update laravel version`
+
+🔹 **Additional rules**
+- Commit messages must be written in English.
+- Must be concise (maximum 72 characters).
+- Begin with the type + optional scope + description.

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import LoginPage from '../pages/auth/LoginPage.vue'
 
 const router = createRouter({
@@ -69,13 +70,24 @@ const router = createRouter({
 })
 
 // Authentication guard
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token')
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+  const isAuthenticated = authStore.isAuthenticated
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
+  // Wait for auth initialization if coming from a fresh page load
+  if (isAuthenticated && !authStore.user) {
+    try {
+      await authStore.fetchUser()
+    } catch {
+      // If user fetch fails, treat as unauthenticated
+      await authStore.logout()
+    }
+  }
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     // User is not authenticated, redirect to login
     next('/login')
-  } else if (!to.meta.requiresAuth && isAuthenticated && (to.name === 'Login' || to.name === 'Register')) {
+  } else if (!to.meta.requiresAuth && authStore.isAuthenticated && (to.name === 'Login' || to.name === 'Register')) {
     // User is authenticated and trying to access auth pages, redirect to dashboard
     next('/user/dashboard')
   } else {

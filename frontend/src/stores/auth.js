@@ -96,7 +96,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
+  async function logout() {
+    // Call logout API if token exists
+    if (token.value) {
+      try {
+        await axios.post('/api/logout')
+      } catch {
+        // Ignore errors - force logout anyway
+      }
+    }
+
     token.value = null
     user.value = null
     localStorage.removeItem('token')
@@ -106,7 +115,23 @@ export const useAuthStore = defineStore('auth', () => {
     const storedToken = localStorage.getItem('token')
     if (storedToken) {
       token.value = storedToken
-      // TODO: Validate token with backend and fetch user data
+      loading.value = true
+      // Fetch user data to validate token
+      fetchUser().finally(() => {
+        loading.value = false
+      })
+    }
+  }
+
+  async function fetchUser() {
+    if (!token.value) return
+
+    try {
+      const response = await axios.get('/api/user')
+      user.value = response.data.user
+    } catch {
+      // Token is invalid, clear auth state
+      logout()
     }
   }
 
@@ -138,6 +163,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     logout,
     initializeAuth,
+    fetchUser,
     resetLoading,
     checkBackendHealth
   }

@@ -16,6 +16,7 @@ Route::get('/health', function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
 
     // Post routes
     Route::get('posts', [PostController::class, 'index']);

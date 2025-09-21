@@ -67,6 +67,9 @@
         </div>
       </header>
 
+      <!-- Role Switcher for Demo -->
+      <RoleSwitcher />
+
       <!-- Stories Section -->
       <section class="stories-section">
         <div class="stories-container">
@@ -264,6 +267,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import RoleSwitcher from '../../components/RoleSwitcher.vue'
 import { useAuthStore } from '../../stores/auth'
 
 const router = useRouter()

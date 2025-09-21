@@ -265,7 +265,18 @@ const onSubmit = async () => {
     if (result.success) {
       loginSuccess.value = true
       setTimeout(() => {
-        router.push('/dashboard')
+        // Redirect based on user role
+        const userRole = localStorage.getItem('userRole') || 'user'
+        switch(userRole) {
+          case 'admin':
+            router.push('/admin/dashboard')
+            break
+          case 'moderator':
+            router.push('/moderator/dashboard')
+            break
+          default:
+            router.push('/user/dashboard')
+        }
       }, 1500)
     }
   } catch {
@@ -277,7 +288,18 @@ const onSubmit = async () => {
 import { watch } from 'vue'
 watch(() => authStore.isAuthenticated, (isAuth) => {
   if (isAuth) {
-    router.push('/dashboard')
+    // Redirect based on user role
+    const userRole = localStorage.getItem('userRole') || 'user'
+    switch(userRole) {
+      case 'admin':
+        router.push('/admin/dashboard')
+        break
+      case 'moderator':
+        router.push('/moderator/dashboard')
+        break
+      default:
+        router.push('/user/dashboard')
+    }
   }
 })
 </script>

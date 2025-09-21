@@ -395,7 +395,18 @@ const onSubmit = async () => {
 import { watch } from 'vue'
 watch(() => authStore.isAuthenticated, (isAuth) => {
   if (isAuth) {
-    router.push('/dashboard')
+    // Redirect based on user role (newly registered users default to 'user')
+    const userRole = localStorage.getItem('userRole') || 'user'
+    switch(userRole) {
+      case 'admin':
+        router.push('/admin/dashboard')
+        break
+      case 'moderator':
+        router.push('/moderator/dashboard')
+        break
+      default:
+        router.push('/user/dashboard')
+    }
   }
 })
 </script>

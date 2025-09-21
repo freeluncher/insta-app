@@ -193,8 +193,12 @@
                 <button
                   v-if="canDeleteComment(comment, post)"
                   @click="deleteCommentFromPost(comment.id, post.id)"
+                  @keydown.enter="deleteCommentFromPost(comment.id, post.id)"
+                  @keydown.space.prevent="deleteCommentFromPost(comment.id, post.id)"
                   class="delete-comment-btn"
-                  title="Delete comment"
+                  title="Hapus komentar"
+                  aria-label="Hapus komentar"
+                  :disabled="isDeleting"
                 >
                   <component :is="utilityIcons.delete" class="w-3 h-3" />
                 </button>
@@ -1124,7 +1128,7 @@ const onPostCreated = (newPost) => {
 }
 
 .post-comments {
-  padding: 0 1rem 0.5rem;
+  padding: 0 1rem 0.25rem; /* Reduced bottom padding from 0.5rem */
 }
 
 .view-comments-btn {
@@ -1133,21 +1137,29 @@ const onPostCreated = (newPost) => {
   color: #6b7280;
   font-size: 0.9rem;
   cursor: pointer;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem; /* Reduced from 0.5rem */
   padding: 0;
 }
 
 .comment {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.25rem; /* Reduced from 0.5rem */
   line-height: 1.4;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 0.125rem 0; /* Reduced from 0.25rem */
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.comment:hover {
+  background: rgba(243, 244, 246, 0.5);
 }
 
 .comment-content {
   flex: 1;
+  min-width: 0; /* Allow text to wrap properly */
 }
 
 .comment-username {
@@ -1163,23 +1175,72 @@ const onPostCreated = (newPost) => {
 .delete-comment-btn {
   background: none;
   border: none;
-  color: #6b7280;
+  color: #9ca3af;
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
   transition: all 0.2s ease;
-  opacity: 0;
+  opacity: 0.8 !important; /* Always visible with !important */
   margin-left: auto;
   flex-shrink: 0;
+  font-size: 0.75rem;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .comment:hover .delete-comment-btn {
-  opacity: 1;
+  opacity: 1 !important;
+  color: #6b7280;
 }
 
 .delete-comment-btn:hover {
+  color: #ef4444 !important;
+  background: #fef2f2;
+  opacity: 1 !important;
+  transform: scale(1.1);
+}
+
+.delete-comment-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  opacity: 1 !important;
   color: #ef4444;
   background: #fef2f2;
+}
+
+.delete-comment-btn:active {
+  transform: scale(0.95);
+}
+
+.delete-comment-btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile specific improvements */
+@media (max-width: 768px) {
+  .comment .delete-comment-btn {
+    opacity: 0.9 !important; /* More visible on mobile */
+    min-width: 32px; /* Larger touch target */
+    min-height: 32px;
+    padding: 0.375rem;
+  }
+
+  .comment:hover .delete-comment-btn {
+    opacity: 1 !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .delete-comment-btn {
+    opacity: 1 !important;
+    border: 1px solid currentColor;
+  }
 }
 
 .post-time {
@@ -1373,6 +1434,10 @@ const onPostCreated = (newPost) => {
   .stories-section {
     margin: 1rem 0;
     padding: 0 1rem;
+  }
+
+  .comment {
+    padding: 0.25rem 0; /* Reduced from 0.5rem for better mobile spacing */
   }
 }
 

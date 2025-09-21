@@ -19,8 +19,12 @@ export function useAuth() {
     if (!authStore.user || !comment) return false
 
     // Comment owner OR post owner can delete comment
-    return authStore.user.id === comment.user_id ||
-           (post && authStore.user.id === post.user_id)
+    // Handle both user_id (direct) and user.id (nested object) formats
+    const commentUserId = comment.user_id || comment.user?.id
+    const postUserId = post.user_id || post.user?.id
+
+    return authStore.user.id === commentUserId ||
+           (post && authStore.user.id === postUserId)
   })
 
   // Check if current user can modify a comment

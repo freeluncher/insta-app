@@ -1,12 +1,20 @@
 <template>
   <div id="app" class="min-h-screen bg-gray-50">
-    <router-view />
+    <!-- Show loading screen during auth initialization -->
+    <AuthLoading 
+      v-if="authStore.loading && !authStore.isAuthenticated" 
+      message="Initializing..." 
+    />
+    
+    <!-- Main app content -->
+    <router-view v-else />
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
+import AuthLoading from './components/AuthLoading.vue'
 
 // Initialize auth store
 const authStore = useAuthStore()

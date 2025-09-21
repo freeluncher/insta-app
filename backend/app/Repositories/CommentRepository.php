@@ -9,11 +9,13 @@ class CommentRepository implements CommentRepositoryInterface
 {
     public function addComment($userId, $postId, $content): Comment
     {
-        return Comment::create([
+        $comment = Comment::create([
             'user_id' => $userId,
             'post_id' => $postId,
             'content' => $content,
         ]);
+
+        return $comment->load('user');
     }
 
     public function getComments($postId)

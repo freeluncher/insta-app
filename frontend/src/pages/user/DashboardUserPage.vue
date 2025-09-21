@@ -221,7 +221,7 @@
                 class="comment-input"
                 v-model="newComments[post.id]"
                 @keyup.enter="addCommentToPost(post.id)"
-                :ref="`comment-${post.id}`"
+                :ref="(el) => commentRefs[post.id] = el"
               />
               <button
                 v-if="newComments[post.id]?.trim()"
@@ -296,6 +296,7 @@ const hasMorePosts = ref(true)
 const newComments = reactive({})
 const posts = ref([])
 const showCreatePostModal = ref(false)
+const commentRefs = ref({})
 
 // Navigation tabs
 const navigationTabs = ref([
@@ -456,9 +457,19 @@ const toggleBookmark = (postId) => {
 
 const focusComment = (postId) => {
   nextTick(() => {
-    const commentInput = document.querySelector(`input[ref="comment-${postId}"]`)
+    const commentInput = commentRefs.value[postId]
     if (commentInput) {
       commentInput.focus()
+      commentInput.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    } else {
+      // Fallback: try again after a short delay
+      setTimeout(() => {
+        const retryInput = commentRefs.value[postId]
+        if (retryInput) {
+          retryInput.focus()
+          retryInput.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 100)
     }
   })
 }

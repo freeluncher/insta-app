@@ -22,14 +22,36 @@ class CommentController extends Controller
         ]);
         $comment = $this->commentService->add($postId, $validated['content']);
 
-        return response()->json($comment, 201);
+        return response()->json([
+            'id' => $comment->id,
+            'content' => $comment->content,
+            'created_at' => $comment->created_at,
+            'user' => [
+                'id' => $comment->user->id,
+                'username' => $comment->user->username,
+                'name' => $comment->user->name,
+            ]
+        ], 201);
     }
 
     public function index($postId)
     {
         $comments = $this->commentService->list($postId);
 
-        return response()->json($comments);
+        $formattedComments = $comments->map(function ($comment) {
+            return [
+                'id' => $comment->id,
+                'content' => $comment->content,
+                'created_at' => $comment->created_at,
+                'user' => [
+                    'id' => $comment->user->id,
+                    'username' => $comment->user->username,
+                    'name' => $comment->user->name,
+                ]
+            ];
+        });
+
+        return response()->json($formattedComments);
     }
 
     public function destroy($commentId)

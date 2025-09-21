@@ -280,6 +280,16 @@
         <span v-if="tab.badge && tab.badge > 0" class="nav-badge">{{ tab.badge }}</span>
       </button>
     </nav>
+
+    <!-- Post Detail Modal -->
+    <PostDetailModal
+      :is-open="showPostModal"
+      :post="selectedPost"
+      @close="closePostModal"
+      @like="handleLike"
+      @unlike="handleUnlike"
+      @comment="handleComment"
+    />
   </div> <!-- End of profile container -->
 </template>
 
@@ -289,6 +299,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useIcons } from '../../composables/useIcons'
 import { getPosts } from '../../services/postService'
+import PostDetailModal from '../../components/PostDetailModal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -303,6 +314,8 @@ const reels = ref([])
 const taggedPosts = ref([])
 const loading = ref(true)
 const notificationCount = ref(3)
+const showPostModal = ref(false)
+const selectedPost = ref(null)
 
 // Get user ID from route params or use current user
 const userId = computed(() => {
@@ -504,7 +517,57 @@ const setActiveTab = (tab) => {
 }
 
 const openPost = (post) => {
-  console.log('Open post:', post.id)
+  selectedPost.value = post
+  showPostModal.value = true
+}
+
+const closePostModal = () => {
+  showPostModal.value = false
+  selectedPost.value = null
+}
+
+const handleLike = (post) => {
+  // Update post like status
+  const postIndex = posts.value.findIndex(p => p.id === post.id)
+  if (postIndex !== -1) {
+    posts.value[postIndex].isLiked = true
+    posts.value[postIndex].likesCount += 1
+    // Also update selected post
+    if (selectedPost.value && selectedPost.value.id === post.id) {
+      selectedPost.value.isLiked = true
+      selectedPost.value.likesCount += 1
+    }
+  }
+  // TODO: Call API to like post
+}
+
+const handleUnlike = (post) => {
+  // Update post unlike status
+  const postIndex = posts.value.findIndex(p => p.id === post.id)
+  if (postIndex !== -1) {
+    posts.value[postIndex].isLiked = false
+    posts.value[postIndex].likesCount = Math.max(0, posts.value[postIndex].likesCount - 1)
+    // Also update selected post
+    if (selectedPost.value && selectedPost.value.id === post.id) {
+      selectedPost.value.isLiked = false
+      selectedPost.value.likesCount = Math.max(0, selectedPost.value.likesCount - 1)
+    }
+  }
+  // TODO: Call API to unlike post
+}
+
+const handleComment = ({ postId, comment }) => {
+  // Update post comment count
+  const postIndex = posts.value.findIndex(p => p.id === postId)
+  if (postIndex !== -1) {
+    posts.value[postIndex].commentsCount += 1
+    // Also update selected post
+    if (selectedPost.value && selectedPost.value.id === postId) {
+      selectedPost.value.commentsCount += 1
+    }
+  }
+  // TODO: Call API to add comment
+  console.log('Add comment to post:', postId, comment)
 }
 
 const openReel = (reel) => {
@@ -568,13 +631,35 @@ const loadPosts = async () => {
   try {
     const response = await getPosts()
     if (response.data && Array.isArray(response.data)) {
-      // Filter posts by current profile user if viewing specific user
+      // Map backend data to frontend format
+      const allPosts = response.data.map(post => ({
+        id: post.id,
+        imageUrl: post.image_url || post.image || 'https://picsum.photos/300/300?random=' + post.id,
+        caption: post.caption || '',
+        likesCount: post.likes_count || 0,
+        commentsCount: post.comments_count || 0,
+        isLiked: post.is_liked || false,
+        createdAt: post.created_at,
+        user: {
+          id: post.user.id,
+          username: post.user.username || post.user.name,
+          avatar: post.user.avatar || `https://i.pravatar.cc/150?img=${post.user.id}`
+        }
+      }))
+
+      console.log('All posts loaded:', allPosts.length)
+      console.log('Current userId:', userId.value)
+      console.log('Auth user ID:', authStore.user?.id)
+
+      // Filter posts by current profile user
       if (userId.value && userId.value !== authStore.user?.id) {
         // For other user's profile, filter posts by user
-        posts.value = response.data.filter(post => post.user.id === userId.value)
+        posts.value = allPosts.filter(post => post.user.id === userId.value)
+        console.log('Filtered posts for user', userId.value, ':', posts.value.length)
       } else {
         // For own profile, show own posts
-        posts.value = response.data.filter(post => post.user.id === authStore.user?.id)
+        posts.value = allPosts.filter(post => post.user.id === authStore.user?.id)
+        console.log('Filtered posts for current user:', posts.value.length)
       }
 
       // Update posts count in profile
@@ -585,6 +670,7 @@ const loadPosts = async () => {
   } catch (error) {
     console.error('Error loading posts:', error)
     // Use mock data if API fails
+    const currentUserId = userId.value || authStore.user?.id
     const mockPosts = [
       {
         id: 1,
@@ -592,7 +678,12 @@ const loadPosts = async () => {
         caption: 'Beautiful sunset',
         likesCount: 124,
         commentsCount: 8,
-        user: { id: userId.value, username: userProfile.value.username }
+        isLiked: false,
+        user: {
+          id: currentUserId,
+          username: userProfile.value.username || authStore.user?.username || 'user',
+          avatar: userProfile.value.avatar || `https://i.pravatar.cc/150?img=${currentUserId}`
+        }
       },
       {
         id: 2,
@@ -600,7 +691,12 @@ const loadPosts = async () => {
         caption: 'Coffee time',
         likesCount: 89,
         commentsCount: 5,
-        user: { id: userId.value, username: userProfile.value.username }
+        isLiked: true,
+        user: {
+          id: currentUserId,
+          username: userProfile.value.username || authStore.user?.username || 'user',
+          avatar: userProfile.value.avatar || `https://i.pravatar.cc/150?img=${currentUserId}`
+        }
       },
       {
         id: 3,
@@ -608,7 +704,12 @@ const loadPosts = async () => {
         caption: 'Weekend vibes',
         likesCount: 256,
         commentsCount: 12,
-        user: { id: userId.value, username: userProfile.value.username }
+        isLiked: false,
+        user: {
+          id: currentUserId,
+          username: userProfile.value.username || authStore.user?.username || 'user',
+          avatar: userProfile.value.avatar || `https://i.pravatar.cc/150?img=${currentUserId}`
+        }
       },
       {
         id: 4,
@@ -616,7 +717,12 @@ const loadPosts = async () => {
         caption: 'Nature walk',
         likesCount: 178,
         commentsCount: 9,
-        user: { id: userId.value, username: userProfile.value.username }
+        isLiked: true,
+        user: {
+          id: currentUserId,
+          username: userProfile.value.username || authStore.user?.username || 'user',
+          avatar: userProfile.value.avatar || `https://i.pravatar.cc/150?img=${currentUserId}`
+        }
       },
       {
         id: 5,
@@ -624,7 +730,12 @@ const loadPosts = async () => {
         caption: 'City lights',
         likesCount: 312,
         commentsCount: 15,
-        user: { id: userId.value, username: userProfile.value.username }
+        isLiked: false,
+        user: {
+          id: currentUserId,
+          username: userProfile.value.username || authStore.user?.username || 'user',
+          avatar: userProfile.value.avatar || `https://i.pravatar.cc/150?img=${currentUserId}`
+        }
       },
       {
         id: 6,
@@ -632,11 +743,17 @@ const loadPosts = async () => {
         caption: 'Food photography',
         likesCount: 201,
         commentsCount: 7,
-        user: { id: userId.value, username: userProfile.value.username }
+        isLiked: true,
+        user: {
+          id: currentUserId,
+          username: userProfile.value.username || authStore.user?.username || 'user',
+          avatar: userProfile.value.avatar || `https://i.pravatar.cc/150?img=${currentUserId}`
+        }
       }
     ]
     posts.value = mockPosts
     userProfile.value.postsCount = mockPosts.length
+    console.log('Using mock posts:', mockPosts.length)
   }
 }
 

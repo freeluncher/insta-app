@@ -38,6 +38,12 @@ const router = createRouter({
       component: () => import('../pages/user/HomePage.vue'),
       meta: { requiresAuth: true }
     },
+    {
+      path: '/user/profile/:id?',
+      name: 'UserProfile',
+      component: () => import('../pages/user/ProfilePage.vue'),
+      meta: { requiresAuth: true }
+    },
 
     // Admin routes (kept for future use)
     {

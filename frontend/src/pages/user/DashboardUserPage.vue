@@ -38,6 +38,14 @@
                 <span v-if="messageCount > 0" class="notification-badge">{{ messageCount }}</span>
               </button>
 
+              <button class="action-btn profile-btn" @click="goToProfile">
+                <img
+                  :src="userAvatar"
+                  :alt="currentUser?.username"
+                  class="profile-avatar-small"
+                />
+              </button>
+
               <button class="action-btn" @click="logout">
                 <component :is="headerIcons.logout" />
               </button>
@@ -290,6 +298,12 @@ const authStore = useAuthStore()
 const { headerIcons, getNavigationIcon, getPostActionIcon, utilityIcons } = useIcons()
 const { canModifyPost, canDeleteComment, handleAuthError } = useAuth()
 
+// Computed properties
+const currentUser = computed(() => authStore.user)
+const userAvatar = computed(() => {
+  return currentUser.value?.avatar || `https://i.pravatar.cc/150?img=${currentUser.value?.id || 1}`
+})
+
 // Reactive data
 const searchQuery = ref('')
 const activeTab = ref('home')
@@ -391,6 +405,7 @@ const switchTab = (tabName) => {
       break
     case 'profile':
       // Navigate to profile page
+      goToProfile()
       break
     default:
       // Home - already here
@@ -411,6 +426,10 @@ const toggleMessages = () => {
 const logout = async () => {
   await authStore.logout()
   router.push('/login')
+}
+
+const goToProfile = () => {
+  router.push(`/user/profile/${currentUser.value?.id}`)
 }
 
 const addStory = () => {
@@ -812,6 +831,24 @@ const onPostCreated = (newPost) => {
 .action-btn svg {
   width: 20px;
   height: 20px;
+}
+
+.profile-btn {
+  padding: 0;
+  overflow: hidden;
+}
+
+.profile-avatar-small {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  transition: border-color 0.3s ease;
+}
+
+.profile-btn:hover .profile-avatar-small {
+  border-color: #667eea;
 }
 
 .notification-badge {

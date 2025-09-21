@@ -7,16 +7,7 @@
         <div class="header-content">
           <div class="logo-section">
             <div class="logo-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" fill="url(#logoGradient)"/>
-                <defs>
-                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#667eea"/>
-                    <stop offset="50%" style="stop-color:#764ba2"/>
-                    <stop offset="100%" style="stop-color:#f093fb"/>
-                  </linearGradient>
-                </defs>
-              </svg>
+              <InstagramLogo />
             </div>
             <h1 class="logo-text">InstaVibe</h1>
           </div>
@@ -25,10 +16,7 @@
             <!-- Search Bar (hidden on mobile) -->
             <div class="search-bar hidden md:flex">
               <div class="search-input-wrapper">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="M21 21l-4.35-4.35"/>
-                </svg>
+                <component :is="headerIcons.search" class="search-icon" />
                 <input
                   type="text"
                   placeholder="Search..."
@@ -41,26 +29,17 @@
             <!-- Notification & Messages (desktop only) -->
             <div class="action-buttons hidden md:flex">
               <button class="action-btn" @click="toggleNotifications">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
+                <component :is="headerIcons.notifications" />
                 <span v-if="notificationCount > 0" class="notification-badge">{{ notificationCount }}</span>
               </button>
 
               <button class="action-btn" @click="toggleMessages">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
+                <component :is="headerIcons.messages" />
                 <span v-if="messageCount > 0" class="notification-badge">{{ messageCount }}</span>
               </button>
 
               <button class="action-btn" @click="logout">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                  <polyline points="16,17 21,12 16,7"/>
-                  <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
+                <component :is="headerIcons.logout" />
               </button>
             </div>
           </div>
@@ -73,10 +52,7 @@
           <!-- Add Your Story -->
           <div class="story-item add-story" @click="addStory">
             <div class="story-avatar add-avatar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="add-icon">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
+              <component :is="utilityIcons.add" class="add-icon" />
             </div>
             <span class="story-username">Your Story</span>
           </div>
@@ -114,11 +90,7 @@
                 </div>
               </div>
               <button class="post-menu-btn" @click.stop="togglePostMenu(post.id)">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <circle cx="12" cy="12" r="1"/>
-                  <circle cx="19" cy="12" r="1"/>
-                  <circle cx="5" cy="12" r="1"/>
-                </svg>
+                <component :is="getPostActionIcon('menu')" />
               </button>
             </div>
 
@@ -130,21 +102,15 @@
                 class="menu-item delete-item"
                 @click="deleteUserPost(post.id)"
               >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
+                <component :is="utilityIcons.delete" class="w-4 h-4 mr-2" />
                 Delete Post
               </button>
               <button class="menu-item">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
-                </svg>
+                <component :is="utilityIcons.share" class="w-4 h-4 mr-2" />
                 Share
               </button>
               <button class="menu-item">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                </svg>
+                <component :is="getPostActionIcon('bookmark')" class="w-4 h-4 mr-2" />
                 Save
               </button>
             </div>
@@ -173,23 +139,15 @@
                   :class="{ liked: post.isLiked }"
                   @click="toggleLike(post.id)"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                  </svg>
+                  <component :is="getPostActionIcon('like', post.isLiked)" />
                 </button>
 
                 <button class="action-btn comment-btn" @click="focusComment(post.id)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  </svg>
+                  <component :is="getPostActionIcon('comment')" />
                 </button>
 
                 <button class="action-btn share-btn" @click="sharePost(post.id)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                    <polyline points="16,6 12,2 8,6"/>
-                    <line x1="12" y1="2" x2="12" y2="15"/>
-                  </svg>
+                  <component :is="getPostActionIcon('share')" />
                 </button>
               </div>
 
@@ -198,9 +156,7 @@
                 :class="{ bookmarked: post.isBookmarked }"
                 @click="toggleBookmark(post.id)"
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
+                <component :is="getPostActionIcon('bookmark', post.isBookmarked)" />
               </button>
             </div>
 
@@ -240,9 +196,7 @@
                   class="delete-comment-btn"
                   title="Delete comment"
                 >
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                  </svg>
+                  <component :is="utilityIcons.delete" class="w-3 h-3" />
                 </button>
               </div>
             </div>
@@ -292,7 +246,7 @@
         :class="{ active: activeTab === tab.name }"
         @click="switchTab(tab.name)"
       >
-        <component :is="getIconComponent(tab.icon)" class="nav-icon" />
+        <component :is="getNavigationIcon(tab.icon, activeTab === tab.name)" class="nav-icon" />
         <span class="nav-label">{{ tab.label }}</span>
         <span v-if="tab.badge && tab.badge > 0" class="nav-badge">{{ tab.badge }}</span>
       </button>
@@ -311,7 +265,9 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import CreatePostModal from '../../components/CreatePostModal.vue'
+import InstagramLogo from '../../components/icons/InstagramLogo.vue'
 import { useAuthStore } from '../../stores/auth'
+import { useIcons } from '../../composables/useIcons'
 import {
   getPosts,
   deletePost,
@@ -326,6 +282,7 @@ import {
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { headerIcons, getNavigationIcon, getPostActionIcon, utilityIcons } = useIcons()
 
 // Reactive data
 const searchQuery = ref('')
@@ -353,31 +310,31 @@ const navigationTabs = ref([
   {
     name: 'home',
     label: 'Home',
-    icon: 'HomeIcon',
+    icon: 'home',
     badge: 0
   },
   {
     name: 'search',
     label: 'Search',
-    icon: 'SearchIcon',
+    icon: 'search',
     badge: 0
   },
   {
     name: 'add',
     label: 'Add',
-    icon: 'PlusIcon',
+    icon: 'add',
     badge: 0
   },
   {
     name: 'activity',
     label: 'Activity',
-    icon: 'HeartIcon',
+    icon: 'activity',
     badge: notificationCount.value
   },
   {
     name: 'profile',
     label: 'Profile',
-    icon: 'UserIcon',
+    icon: 'profile',
     badge: 0
   }
 ])
@@ -632,53 +589,6 @@ const getImageUrl = (imagePath) => {
   if (!imagePath) return 'https://via.placeholder.com/600x600?text=No+Image'
   if (imagePath.startsWith('http')) return imagePath
   return `http://localhost:8000/storage/${imagePath}`
-}
-
-const getIconComponent = (iconName) => {
-  return iconComponents[iconName] || iconComponents.HomeIcon
-}
-
-// Icon components (simplified)
-const iconComponents = {
-  HomeIcon: {
-    template: `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        <polyline points="9,22 9,12 15,12 15,22"/>
-      </svg>
-    `
-  },
-  SearchIcon: {
-    template: `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <circle cx="11" cy="11" r="8"/>
-        <path d="M21 21l-4.35-4.35"/>
-      </svg>
-    `
-  },
-  PlusIcon: {
-    template: `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-    `
-  },
-  HeartIcon: {
-    template: `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    `
-  },
-  UserIcon: {
-    template: `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-    `
-  }
 }
 
 // Fetch posts on mount

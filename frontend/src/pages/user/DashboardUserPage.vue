@@ -110,7 +110,7 @@
             <!-- Post Header -->
             <div class="post-header">
               <div class="post-user-info">
-                <img :src="post.user.avatar" :alt="post.user.username" class="post-avatar" />
+                <img :src="post.user.avatar || 'https://i.pravatar.cc/150?img=' + post.user.id" :alt="post.user.username" class="post-avatar" />
                 <div class="post-user-details">
                   <h3 class="post-username">{{ post.user.username }}</h3>
                   <span class="post-location" v-if="post.location">{{ post.location }}</span>
@@ -127,7 +127,7 @@
 
             <!-- Post Image -->
             <div class="post-image-container">
-              <img :src="post.image" :alt="post.caption" class="post-image" />
+              <img :src="getImageUrl(post.image_path)" :alt="post.caption" class="post-image" />
 
               <!-- Image Navigation (for multiple images) -->
               <div v-if="post.images && post.images.length > 1" class="image-navigation">
@@ -207,7 +207,7 @@
                 class="comment"
               >
                 <span class="comment-username">{{ comment.user.username }}</span>
-                <span class="comment-text">{{ comment.text }}</span>
+                <span class="comment-text">{{ comment.content }}</span>
               </div>
             </div>
 
@@ -223,13 +223,13 @@
                 placeholder="Add a comment..."
                 class="comment-input"
                 v-model="newComments[post.id]"
-                @keyup.enter="addComment(post.id)"
+                @keyup.enter="addCommentToPost(post.id)"
                 :ref="`comment-${post.id}`"
               />
               <button
                 v-if="newComments[post.id]?.trim()"
                 class="post-comment-btn"
-                @click="addComment(post.id)"
+                @click="addCommentToPost(post.id)"
               >
                 Post
               </button>
@@ -261,6 +261,13 @@
         <span v-if="tab.badge && tab.badge > 0" class="nav-badge">{{ tab.badge }}</span>
       </button>
     </nav>
+
+    <!-- Create Post Modal -->
+    <CreatePostModal
+      :is-open="showCreatePostModal"
+      @close="closeCreatePostModal"
+      @post-created="onPostCreated"
+    />
   </div>
 </template>
 
@@ -268,7 +275,17 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import RoleSwitcher from '../../components/RoleSwitcher.vue'
+import CreatePostModal from '../../components/CreatePostModal.vue'
 import { useAuthStore } from '../../stores/auth'
+import {
+  getPosts,
+  likePost,
+  unlikePost,
+  getLikesCount,
+  isPostLiked,
+  addComment,
+  getComments
+} from '../../services/postService.js'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -281,6 +298,8 @@ const messageCount = ref(1)
 const loadingPosts = ref(false)
 const hasMorePosts = ref(true)
 const newComments = reactive({})
+const posts = ref([])
+const showCreatePostModal = ref(false)
 
 // Navigation tabs
 const navigationTabs = ref([
@@ -316,7 +335,7 @@ const navigationTabs = ref([
   }
 ])
 
-// Sample data - in real app this would come from API
+// Sample data for stories (keeping as is for now)
 const stories = ref([
   {
     id: 1,
@@ -345,56 +364,6 @@ const stories = ref([
   }
 ])
 
-const posts = ref([
-  {
-    id: 1,
-    user: { username: 'alice_wonder', avatar: 'https://i.pravatar.cc/150?img=1' },
-    image: 'https://picsum.photos/600/600?random=1',
-    caption: 'Beautiful sunset at the beach! 🌅 #sunset #beach #peaceful',
-    location: 'Bali, Indonesia',
-    likesCount: 234,
-    commentsCount: 12,
-    isLiked: false,
-    isBookmarked: false,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    comments: [
-      { id: 1, user: { username: 'bob_builder' }, text: 'Wow, amazing view! 😍' },
-      { id: 2, user: { username: 'carol_sing' }, text: 'I miss Bali so much!' }
-    ]
-  },
-  {
-    id: 2,
-    user: { username: 'bob_builder', avatar: 'https://i.pravatar.cc/150?img=2' },
-    image: 'https://picsum.photos/600/600?random=2',
-    caption: 'New project coming along nicely! 🏗️ #architecture #construction',
-    location: 'New York City',
-    likesCount: 89,
-    commentsCount: 5,
-    isLiked: true,
-    isBookmarked: true,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-    comments: [
-      { id: 3, user: { username: 'alice_wonder' }, text: 'Great work! Keep it up 👍' }
-    ]
-  },
-  {
-    id: 3,
-    user: { username: 'carol_sing', avatar: 'https://i.pravatar.cc/150?img=3' },
-    image: 'https://picsum.photos/600/600?random=3',
-    caption: 'Music is life 🎵 Recording new song today!',
-    location: 'Los Angeles',
-    likesCount: 445,
-    commentsCount: 28,
-    isLiked: false,
-    isBookmarked: false,
-    createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
-    comments: [
-      { id: 4, user: { username: 'david_dance' }, text: 'Can\'t wait to hear it! 🎶' },
-      { id: 5, user: { username: 'emma_art' }, text: 'You\'re so talented!' }
-    ]
-  }
-])
-
 // Methods
 const switchTab = (tabName) => {
   activeTab.value = tabName
@@ -405,7 +374,7 @@ const switchTab = (tabName) => {
       // Open search modal or navigate to search page
       break
     case 'add':
-      // Open add post modal or navigate to create page
+      showCreatePostModal.value = true
       break
     case 'activity':
       // Navigate to activity/notifications page
@@ -457,11 +426,28 @@ const changeImage = (postId, imageIndex) => {
   }
 }
 
-const toggleLike = (postId) => {
-  const post = posts.value.find(p => p.id === postId)
-  if (post) {
-    post.isLiked = !post.isLiked
-    post.likesCount += post.isLiked ? 1 : -1
+const toggleLike = async (postId) => {
+  try {
+    const post = posts.value.find(p => p.id === postId)
+    if (!post) return
+
+    if (post.isLiked) {
+      await unlikePost(postId)
+      post.isLiked = false
+      post.likesCount = Math.max(0, post.likesCount - 1)
+    } else {
+      await likePost(postId)
+      post.isLiked = true
+      post.likesCount += 1
+    }
+  } catch (error) {
+    console.error('Error toggling like:', error)
+    // Revert optimistic update on error
+    const post = posts.value.find(p => p.id === postId)
+    if (post) {
+      post.isLiked = !post.isLiked
+      post.likesCount += post.isLiked ? 1 : -1
+    }
   }
 }
 
@@ -491,19 +477,25 @@ const viewAllComments = (postId) => {
   console.log('View all comments:', postId)
 }
 
-const addComment = (postId) => {
+const addCommentToPost = async (postId) => {
   const commentText = newComments[postId]?.trim()
-  if (commentText) {
+  if (!commentText) return
+
+  try {
+    const response = await addComment(postId, commentText)
     const post = posts.value.find(p => p.id === postId)
     if (post) {
       post.comments.push({
-        id: Date.now(),
-        user: { username: 'current_user' }, // Would be actual current user
-        text: commentText
+        id: response.data.id,
+        user: response.data.user,
+        content: response.data.content,
+        created_at: response.data.created_at
       })
       post.commentsCount++
       newComments[postId] = ''
     }
+  } catch (error) {
+    console.error('Error adding comment:', error)
   }
 }
 
@@ -528,7 +520,8 @@ const formatCount = (count) => {
 
 const formatTimeAgo = (date) => {
   const now = new Date()
-  const diffMs = now - date
+  const postDate = new Date(date)
+  const diffMs = now - postDate
   const diffMins = Math.floor(diffMs / 60000)
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
@@ -537,7 +530,13 @@ const formatTimeAgo = (date) => {
   if (diffMins < 60) return `${diffMins}m`
   if (diffHours < 24) return `${diffHours}h`
   if (diffDays < 7) return `${diffDays}d`
-  return date.toLocaleDateString()
+  return postDate.toLocaleDateString()
+}
+
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return 'https://via.placeholder.com/600x600?text=No+Image'
+  if (imagePath.startsWith('http')) return imagePath
+  return `http://localhost:8000/storage/${imagePath}`
 }
 
 const getIconComponent = (iconName) => {
@@ -587,10 +586,64 @@ const iconComponents = {
   }
 }
 
+// Fetch posts on mount
+const fetchPosts = async () => {
+  try {
+    loadingPosts.value = true
+    const response = await getPosts()
+
+    // Transform posts data and add like/comment info
+    posts.value = await Promise.all(response.data.map(async (post) => {
+      try {
+        const [likesResponse, isLikedResponse, commentsResponse] = await Promise.all([
+          getLikesCount(post.id),
+          isPostLiked(post.id),
+          getComments(post.id)
+        ])
+
+        return {
+          ...post,
+          likesCount: likesResponse.data.count,
+          isLiked: isLikedResponse.data.liked,
+          isBookmarked: false, // Not implemented yet
+          comments: commentsResponse.data.slice(0, 2), // Show first 2 comments
+          commentsCount: commentsResponse.data.length,
+          createdAt: new Date(post.created_at)
+        }
+      } catch (error) {
+        console.error(`Error fetching data for post ${post.id}:`, error)
+        return {
+          ...post,
+          likesCount: 0,
+          isLiked: false,
+          isBookmarked: false,
+          comments: [],
+          commentsCount: 0,
+          createdAt: new Date(post.created_at)
+        }
+      }
+    }))
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+    posts.value = []
+  } finally {
+    loadingPosts.value = false
+  }
+}
+
 // Lifecycle
 onMounted(() => {
-  // Initialize component
+  fetchPosts()
 })
+
+const closeCreatePostModal = () => {
+  showCreatePostModal.value = false
+}
+
+const onPostCreated = () => {
+  // Refresh posts after creating a new one
+  fetchPosts()
+}
 </script>
 
 <style scoped>

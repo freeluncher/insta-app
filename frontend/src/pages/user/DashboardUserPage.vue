@@ -98,7 +98,7 @@
                         <!-- Post Menu Dropdown -->
             <div v-if="isMenuVisible(post.id)" class="post-menu-dropdown" @click.stop>
               <button
-                v-if="post.user.id === authStore.user?.id"
+                v-if="canModifyPost(post)"
                 class="menu-item delete-item"
                 @click="deleteUserPost(post.id)"
               >
@@ -191,7 +191,7 @@
                   <span class="comment-text">{{ comment.content }}</span>
                 </div>
                 <button
-                  v-if="authStore.user && authStore.user.id === comment.user.id"
+                  v-if="canDeleteComment(comment, post)"
                   @click="deleteCommentFromPost(comment.id, post.id)"
                   class="delete-comment-btn"
                   title="Delete comment"
@@ -268,6 +268,7 @@ import CreatePostModal from '../../components/CreatePostModal.vue'
 import InstagramLogo from '../../components/icons/InstagramLogo.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useIcons } from '../../composables/useIcons'
+import { useAuth } from '../../composables/useAuth'
 import {
   getPosts,
   deletePost,
@@ -283,6 +284,7 @@ import {
 const router = useRouter()
 const authStore = useAuthStore()
 const { headerIcons, getNavigationIcon, getPostActionIcon, utilityIcons } = useIcons()
+const { canModifyPost, canDeleteComment, handleAuthError } = useAuth()
 
 // Reactive data
 const searchQuery = ref('')
@@ -433,7 +435,8 @@ const deleteUserPost = async (postId) => {
     showPostMenu[postId] = false
   } catch (error) {
     console.error('Error deleting post:', error)
-    alert('Failed to delete post. Please try again.')
+    const errorInfo = handleAuthError(error)
+    alert(errorInfo.message)
   }
 }
 
@@ -547,7 +550,8 @@ const deleteCommentFromPost = async (commentId, postId) => {
     }
   } catch (error) {
     console.error('Error deleting comment:', error)
-    alert('Failed to delete comment. Please try again.')
+    const errorInfo = handleAuthError(error)
+    alert(errorInfo.message)
   }
 }
 

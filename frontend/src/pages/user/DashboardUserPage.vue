@@ -701,12 +701,16 @@ const onPostCreated = (newPost) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  overflow: hidden; /* Prevent overflow */
+  min-width: 0; /* Allow flex children to shrink */
 }
 
 .logo-section {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-shrink: 0; /* Prevent logo from shrinking */
+  min-width: 0;
 }
 
 .logo-icon {
@@ -727,17 +731,24 @@ const onPostCreated = (newPost) => {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem; /* Base gap */
+  max-width: 65%; /* Increased to give more space */
+  flex-shrink: 1;
+  justify-content: flex-end; /* Align to right side */
 }
 
 .search-bar {
   position: relative;
+  flex-shrink: 1;
+  min-width: 0;
+  margin-right: 1rem; /* Add margin to prevent overlapping */
 }
 
 .search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .search-icon {
@@ -750,13 +761,16 @@ const onPostCreated = (newPost) => {
 }
 
 .search-input {
-  width: 300px;
+  width: 100%;
+  max-width: 280px; /* Reduced to prevent overlap */
+  min-width: 180px;
   padding: 8px 12px 8px 36px;
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
   border-radius: 20px;
   font-size: 0.9rem;
   transition: all 0.3s ease;
+  box-sizing: border-box; /* Ensure padding is included in width */
 }
 
 .search-input:focus {
@@ -769,7 +783,10 @@ const onPostCreated = (newPost) => {
 .action-buttons {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.5rem; /* Increased gap between icons */
+  flex-shrink: 0; /* Prevent shrinking */
+  position: relative;
+  z-index: 1; /* Ensure icons are above other elements */
 }
 
 .action-btn {
@@ -1380,6 +1397,44 @@ const onPostCreated = (newPost) => {
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .header-content {
+    padding: 1rem;
+  }
+
+  .header-actions {
+    max-width: 55%;
+    gap: 0.375rem;
+  }
+
+  .search-bar {
+    margin-right: 0.75rem;
+  }
+
+  .search-input {
+    max-width: 220px;
+    min-width: 160px;
+  }
+}@media (max-width: 1024px) {
+  .header-actions {
+    max-width: 60%;
+    gap: 0.25rem;
+  }
+
+  .search-bar {
+    margin-right: 0.5rem;
+  }
+
+  .search-input {
+    min-width: 140px;
+    max-width: 180px;
+  }
+
+  .action-buttons {
+    gap: 0.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .header-content {
     padding: 0.75rem 1rem;
@@ -1406,13 +1461,64 @@ const onPostCreated = (newPost) => {
     width: 60px;
     height: 60px;
   }
+}
 
-  .story-username {
-    max-width: 60px;
+/* Extra small screens - hide logo text if needed */
+@media (max-width: 640px) {
+  .logo-text {
+    display: none;
+  }
+
+  .header-actions {
+    max-width: 75%;
+    gap: 0.125rem;
+  }
+
+  .search-bar {
+    margin-right: 0.25rem;
+  }
+
+  .action-buttons {
+    gap: 0.125rem;
+  }
+}
+
+/* Very small screens - further adjustments */
+@media (max-width: 480px) {
+  .header-actions {
+    gap: 0.125rem;
+    max-width: 80%;
+  }
+
+  .search-bar {
+    margin-right: 0.125rem;
+  }
+
+  .search-input {
+    min-width: 100px;
+    max-width: 130px;
+  }
+
+  .action-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .action-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .action-buttons {
+    gap: 0.125rem; /* Minimal gap for very small screens */
   }
 }
 
 @media (max-width: 640px) {
+  .story-username {
+    max-width: 60px;
+  }
+
   .dashboard-header {
     position: relative;
   }

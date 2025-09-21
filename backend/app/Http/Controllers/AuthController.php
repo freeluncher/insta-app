@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Services\AuthServiceInterface;
+
+use App\Services\AuthServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -30,7 +31,7 @@ class AuthController extends Controller
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         }
     }
@@ -44,6 +45,7 @@ class AuthController extends Controller
 
         try {
             $result = $this->authService->login($data['email'], $data['password']);
+
             return response()->json($result);
         } catch (ValidationException $e) {
             return response()->json(['message' => 'The provided credentials are incorrect.'], 422);

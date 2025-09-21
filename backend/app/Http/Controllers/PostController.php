@@ -23,9 +23,10 @@ class PostController extends Controller
     public function show($id)
     {
         $post = $this->postService->getById($id);
-        if (!$post) {
+        if (! $post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
+
         return response()->json($post);
     }
 
@@ -33,7 +34,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'caption' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -49,7 +50,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'caption' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -58,7 +59,7 @@ class PostController extends Controller
 
         $post = $this->postService->update($id, $validated);
 
-        if (!$post) {
+        if (! $post) {
             return response()->json(['message' => 'Unauthorized or post not found'], 403);
         }
 
@@ -68,9 +69,10 @@ class PostController extends Controller
     public function destroy($id)
     {
         $deleted = $this->postService->delete($id);
-        if (!$deleted) {
+        if (! $deleted) {
             return response()->json(['message' => 'Unauthorized or post not found'], 403);
         }
+
         return response()->json(['message' => 'Post deleted successfully']);
     }
 }

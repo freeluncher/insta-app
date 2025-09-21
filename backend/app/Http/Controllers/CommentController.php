@@ -18,15 +18,17 @@ class CommentController extends Controller
     public function store(Request $request, $postId)
     {
         $validated = $request->validate([
-            'content' => 'required|string'
+            'content' => 'required|string',
         ]);
         $comment = $this->commentService->add($postId, $validated['content']);
+
         return response()->json($comment, 201);
     }
 
     public function index($postId)
     {
         $comments = $this->commentService->list($postId);
+
         return response()->json($comments);
     }
 
@@ -36,6 +38,7 @@ class CommentController extends Controller
         if ($deleted) {
             return response()->json(['message' => 'Comment deleted']);
         }
+
         return response()->json(['message' => 'Not found or unauthorized'], 404);
     }
 }

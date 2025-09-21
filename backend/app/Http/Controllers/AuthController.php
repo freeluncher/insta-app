@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Services\AuthServiceInterface;
+use App\Http\Services\AuthServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Http\Services;
 
 use App\Models\User;
-use App\Repositories\UserRepositoryInterface;
+use App\Http\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 

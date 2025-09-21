@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use App\Services\Interfaces\LikeServiceInterface;
 
 class LikeController extends Controller
@@ -16,6 +17,13 @@ class LikeController extends Controller
 
     public function store($postId)
     {
+        $post = Post::find($postId);
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        $this->authorize('like', $post);
+
         $like = $this->likeService->like($postId);
 
         return response()->json(['success' => true, 'like' => $like]);
@@ -23,6 +31,13 @@ class LikeController extends Controller
 
     public function destroy($postId)
     {
+        $post = Post::find($postId);
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        $this->authorize('like', $post);
+
         $deleted = $this->likeService->unlike($postId);
 
         return response()->json(['success' => $deleted]);

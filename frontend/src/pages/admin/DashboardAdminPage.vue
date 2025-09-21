@@ -33,11 +33,6 @@
       </div>
     </header>
 
-    <!-- Role Switcher for Demo -->
-    <div style="max-width: 1400px; margin: 0 auto; padding: 2rem 2rem 0 2rem;">
-      <RoleSwitcher />
-    </div>
-
     <!-- Main Content -->
     <div class="main-content">
       <!-- Navigation Sidebar -->
@@ -267,19 +262,14 @@
 
 <script>
 import { useRouter } from 'vue-router'
-import RoleSwitcher from '../../components/RoleSwitcher.vue'
 
 export default {
   name: 'DashboardAdminPage',
-  components: {
-    RoleSwitcher
-  },
   setup() {
     const router = useRouter()
 
     const handleLogout = () => {
       localStorage.removeItem('token')
-      localStorage.removeItem('userRole')
       router.push('/login')
     }
 

@@ -319,7 +319,12 @@ const selectedPost = ref(null)
 
 // Get user ID from route params or use current user
 const userId = computed(() => {
-  return route.params.id ? parseInt(route.params.id) : authStore.user?.id
+  // If there's an ID in route params, use it (viewing other user's profile)
+  if (route.params.id) {
+    return parseInt(route.params.id)
+  }
+  // Otherwise, use current authenticated user's ID (viewing own profile)
+  return authStore.user?.id || null
 })
 
 // Mock user profile data (replace with actual API call)
@@ -629,7 +634,15 @@ const loadUserProfile = async (id) => {
 // Load posts
 const loadPosts = async () => {
   try {
+    console.log('=== Loading posts ===')
+    console.log('Current route params:', route.params)
+    console.log('userId computed:', userId.value)
+    console.log('authStore.user:', authStore.user)
+    console.log('authStore.user?.id:', authStore.user?.id)
+
     const response = await getPosts()
+    console.log('API response:', response)
+
     if (response.data && Array.isArray(response.data)) {
       // Map backend data to frontend format
       const allPosts = response.data.map(post => ({
@@ -648,30 +661,43 @@ const loadPosts = async () => {
       }))
 
       console.log('All posts loaded:', allPosts.length)
+      console.log('All posts data:', allPosts)
       console.log('Current userId:', userId.value)
       console.log('Auth user ID:', authStore.user?.id)
+      console.log('Are we on own profile?', isOwnProfile.value)
 
-      // Filter posts by current profile user
-      if (userId.value && userId.value !== authStore.user?.id) {
-        // For other user's profile, filter posts by user
-        posts.value = allPosts.filter(post => post.user.id === userId.value)
-        console.log('Filtered posts for user', userId.value, ':', posts.value.length)
+      // Filter posts by the profile user ID
+      const targetUserId = userId.value
+      console.log('Target user ID for filtering:', targetUserId)
+
+      if (targetUserId) {
+        posts.value = allPosts.filter(post => {
+          const matches = post.user.id === targetUserId
+          console.log(`Checking post ${post.id}: post.user.id=${post.user.id}, targetUserId=${targetUserId}, match=${matches}`)
+          return matches
+        })
+        console.log('Filtered posts:', posts.value.length)
+        console.log('Filtered posts data:', posts.value)
       } else {
-        // For own profile, show own posts
-        posts.value = allPosts.filter(post => post.user.id === authStore.user?.id)
-        console.log('Filtered posts for current user:', posts.value.length)
+        console.log('No target user ID found, showing no posts')
+        posts.value = []
       }
 
       // Update posts count in profile
       userProfile.value.postsCount = posts.value.length
+      console.log('Updated profile posts count:', userProfile.value.postsCount)
     } else {
+      console.log('No posts data in response or not array:', response.data)
       posts.value = []
     }
   } catch (error) {
     console.error('Error loading posts:', error)
     // Use mock data if API fails
     const currentUserId = userId.value || authStore.user?.id
-    const mockPosts = [
+    console.log('Using mock data for user ID:', currentUserId)
+
+    if (currentUserId) {
+      const mockPosts = [
       {
         id: 1,
         imageUrl: 'https://picsum.photos/300/300?random=1',
@@ -754,25 +780,34 @@ const loadPosts = async () => {
     posts.value = mockPosts
     userProfile.value.postsCount = mockPosts.length
     console.log('Using mock posts:', mockPosts.length)
+    } else {
+      console.log('No user ID available for mock posts')
+      posts.value = []
+      userProfile.value.postsCount = 0
+    }
   }
 }
 
 // Watch for route changes (after loadUserProfile is defined)
 watch(() => route.params.id, (newId) => {
-  if (newId) {
-    loadUserProfile(parseInt(newId))
+  console.log('Route params.id changed:', newId)
+  const targetId = newId ? parseInt(newId) : authStore.user?.id
+  console.log('Target ID for profile:', targetId)
+
+  if (targetId) {
+    loadUserProfile(targetId)
     loadPosts() // Reload posts when user changes
   } else {
-    // Load current user's profile
-    loadUserProfile(authStore.user?.id)
-    loadPosts() // Reload posts for current user
+    console.log('No target ID available for loading profile')
   }
 }, { immediate: true })
 
 // Watch for auth store changes
 watch(() => authStore.user, (newUser) => {
+  console.log('Auth user changed:', newUser)
   if (newUser && !route.params.id) {
     // Update profile if viewing own profile and user data changes
+    console.log('Loading profile for auth user:', newUser.id)
     loadUserProfile(newUser.id)
     loadPosts() // Reload posts when user auth changes
   }
@@ -780,11 +815,22 @@ watch(() => authStore.user, (newUser) => {
 
 // Lifecycle
 onMounted(() => {
+  console.log('ProfilePage mounted')
+  console.log('Route params:', route.params)
+  console.log('Auth user:', authStore.user)
+
+  // Load posts immediately
   loadPosts()
-  // Ensure user profile is loaded even if watcher doesn't trigger
-  if (!loading.value && authStore.user) {
-    const targetId = route.params.id ? parseInt(route.params.id) : authStore.user.id
+
+  // Ensure user profile is loaded
+  const targetId = route.params.id ? parseInt(route.params.id) : authStore.user?.id
+  console.log('Target ID on mount:', targetId)
+
+  if (targetId) {
     loadUserProfile(targetId)
+  } else {
+    console.log('No target ID available on mount, setting loading to false')
+    loading.value = false
   }
 })
 </script>

@@ -82,7 +82,14 @@ export const useAuthStore = defineStore('auth', () => {
 
       return { success: true }
     } catch (err) {
-      error.value = err.response?.data?.message || 'Registration failed'
+      if (err.response?.status === 422 && err.response?.data?.errors) {
+        // Handle validation errors
+        const validationErrors = err.response.data.errors
+        const firstError = Object.values(validationErrors)[0][0] // Get first error message
+        error.value = firstError
+      } else {
+        error.value = err.response?.data?.message || 'Registration failed'
+      }
       return { success: false, error: error.value }
     } finally {
       loading.value = false

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\LikeServiceInterface;
+use App\Services\Interfaces\LikeServiceInterface;
 
 class LikeController extends Controller
 {

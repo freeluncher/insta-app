@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PostServiceInterface;
+use App\Services\Interfaces\PostServiceInterface;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -33,12 +33,12 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'caption' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'caption' => 'nullable|string|max:2200',
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('posts', 'public');
+            $validated['image_path'] = $request->file('image')->store('posts', 'public');
         }
 
         $post = $this->postService->create($validated);
@@ -49,13 +49,16 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'caption' => 'required|string',
+            'caption' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('posts', 'public');
+            $validated['image_path'] = $request->file('image')->store('posts', 'public');
         }
+
+        // Remove the image field since we don't need it in the database
+        unset($validated['image']);
 
         $post = $this->postService->update($id, $validated);
 

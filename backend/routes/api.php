@@ -1,10 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CommentController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);

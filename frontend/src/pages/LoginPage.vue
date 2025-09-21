@@ -48,7 +48,7 @@
               type="submit"
               variant="primary"
               size="lg"
-              :loading="loading"
+              :loading="authStore.loading"
               loading-text="Logging in..."
               full-width
               class="justify-center"
@@ -58,9 +58,9 @@
           </div>
 
           <!-- Error Message -->
-          <div v-if="error" class="text-center">
+          <div v-if="authStore.error" class="text-center">
             <p class="text-red-600 text-sm font-medium">
-              {{ error }}
+              {{ authStore.error }}
             </p>
           </div>
 
@@ -137,16 +137,16 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseInput from '../components/BaseInput.vue'
 import BaseButton from '../components/BaseButton.vue'
-import { useLogin } from '../composables/useLogin'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
 const emailError = ref('')
 const passwordError = ref('')
-
-const { loading, error, loginSuccess, login } = useLogin()
+const loginSuccess = ref(false)
 
 const handleForgotPassword = () => {
   // TODO: Implement forgot password functionality
@@ -182,19 +182,23 @@ const onSubmit = async () => {
   if (!validateForm()) return
 
   try {
-    await login(email.value, password.value)
+    const result = await authStore.login({ email: email.value, password: password.value })
+    if (result.success) {
+      loginSuccess.value = true
+      setTimeout(() => {
+        router.push('/')
+      }, 1500)
+    }
   } catch {
-    // Error is handled by the composable
+    // Error is handled by the store
   }
 }
 
 // Watch for successful login and redirect
 import { watch } from 'vue'
-watch(loginSuccess, (val) => {
-  if (val) {
-    setTimeout(() => {
-      router.push('/')
-    }, 1500)
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (isAuth) {
+    router.push('/')
   }
 })
 </script>

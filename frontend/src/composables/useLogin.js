@@ -1,23 +1,15 @@
-import { ref } from 'vue'
-import { login as apiLogin } from '../services/auth.service'
+import { computed } from 'vue'
+import { useAuthStore } from '../stores/auth'
 
 export function useLogin() {
-  const loading = ref(false)
-  const error = ref('')
-  const loginSuccess = ref(false)
+  const authStore = useAuthStore()
+
+  const loading = computed(() => authStore.loading)
+  const error = computed(() => authStore.error)
+  const loginSuccess = computed(() => authStore.isAuthenticated)
 
   async function login(email, password) {
-    loading.value = true
-    error.value = ''
-    try {
-      const res = await apiLogin(email, password)
-      // Simpan token ke localStorage/session dsb
-      localStorage.setItem('token', res.data.access_token)
-      loginSuccess.value = true
-    } catch (e) {
-      error.value = e.response?.data?.message || 'Login failed'
-    }
-    loading.value = false
+    return await authStore.login({ email, password })
   }
 
   return { loading, error, loginSuccess, login }

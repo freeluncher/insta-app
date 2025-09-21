@@ -90,7 +90,7 @@ const caption = ref('')
 const isLoading = ref(false)
 
 const canShare = computed(() => {
-  return selectedFile.value && !isLoading.value
+  return (selectedFile.value || caption.value.trim()) && !isLoading.value
 })
 
 const triggerFileInput = () => {
@@ -122,23 +122,30 @@ const sharePost = async () => {
 
   try {
     isLoading.value = true
-    const formData = new FormData()
-    formData.append('image', selectedFile.value)
-    if (caption.value.trim()) {
-      formData.append('caption', caption.value.trim())
+    const postData = {}
+
+    if (selectedFile.value) {
+      postData.image = selectedFile.value
     }
 
-    await createPost(formData)
+    if (caption.value.trim()) {
+      postData.caption = caption.value.trim()
+    }
+
+    console.log('Creating post...')
+    const response = await createPost(postData)
+    console.log('Post created successfully:', response.data)
 
     // Reset form
     removeImage()
     caption.value = ''
 
-    emit('post-created')
+    emit('post-created', response.data)
     emit('close')
   } catch (error) {
     console.error('Error creating post:', error)
     // You could add error handling here
+    alert('Failed to create post. Please try again.')
   } finally {
     isLoading.value = false
   }

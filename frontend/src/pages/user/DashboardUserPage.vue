@@ -589,11 +589,13 @@ const iconComponents = {
 // Fetch posts on mount
 const fetchPosts = async () => {
   try {
+    console.log('Fetching posts...')
     loadingPosts.value = true
     const response = await getPosts()
+    console.log('Posts response:', response.data)
 
     // Transform posts data and add like/comment info
-    posts.value = await Promise.all(response.data.map(async (post) => {
+    posts.value = await Promise.all(response.data.data.map(async (post) => {
       try {
         const [likesResponse, isLikedResponse, commentsResponse] = await Promise.all([
           getLikesCount(post.id),
@@ -623,6 +625,7 @@ const fetchPosts = async () => {
         }
       }
     }))
+    console.log('Posts loaded:', posts.value.length)
   } catch (error) {
     console.error('Error fetching posts:', error)
     posts.value = []
@@ -640,7 +643,8 @@ const closeCreatePostModal = () => {
   showCreatePostModal.value = false
 }
 
-const onPostCreated = () => {
+const onPostCreated = (newPost) => {
+  console.log('New post created:', newPost)
   // Refresh posts after creating a new one
   fetchPosts()
 }

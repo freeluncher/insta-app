@@ -1,5 +1,5 @@
 <template>
-  <div class="register-container">
+  <div class="login-container">
     <!-- Background Elements -->
     <div class="background-elements">
       <div class="floating-shape shape-1"></div>
@@ -26,14 +26,22 @@
             </svg>
           </div>
           <h1 class="logo-text">InstaVibe</h1>
-          <p class="logo-subtitle">Join our vibrant community</p>
+          <p class="logo-subtitle">Share your world, connect with others</p>
         </div>
 
         <div class="features-list">
           <div class="feature-item">
             <div class="feature-icon">
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <span>Share amazing moments</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.5 7h-5c-.8 0-1.52.5-1.8 1.26l-2.92 8.74H12v6h8z"/>
               </svg>
             </div>
             <span>Connect with friends</span>
@@ -41,72 +49,23 @@
           <div class="feature-item">
             <div class="feature-icon">
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
             </div>
-            <span>Share your moments</span>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 11H7v9h2v-9zm4 0h-2v9h2v-9zm4 0h-2v9h2v-9zm2-7v2H4V4h5V2h6v2h5zM6 19c0 1.1.9 2 2 2h8c0-1.1-.9-2-2-2H8c-1.1 0-2-.9-2-2z"/>
-              </svg>
-            </div>
-            <span>Express yourself</span>
+            <span>Express yourself freely</span>
           </div>
         </div>
       </div>
 
-      <!-- Right Side - Register Form -->
+      <!-- Right Side - Login Form -->
       <div class="form-section animate-slide-right">
         <div class="form-container">
           <div class="form-header">
-            <h2 class="form-title">Create Account</h2>
-            <p class="form-subtitle">Start your journey with us today</p>
+            <h2 class="form-title">Welcome Back</h2>
+            <p class="form-subtitle">Sign in to continue your journey</p>
           </div>
 
-          <form @submit.prevent="onSubmit" class="register-form">
-            <!-- Name Input -->
-            <div class="input-group">
-              <div class="input-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <BaseInput
-                v-model="form.name"
-                type="text"
-                placeholder="Full Name"
-                size="lg"
-                variant="outlined"
-                :error="errors.name"
-                required
-                class="icon-input"
-              />
-            </div>
-
-            <!-- Username Input -->
-            <div class="input-group">
-              <div class="input-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="8.5" cy="7" r="4"/>
-                  <path d="M20 8v6M23 11l-3 3-3-3"/>
-                </svg>
-              </div>
-              <BaseInput
-                v-model="form.username"
-                type="text"
-                placeholder="Username"
-                size="lg"
-                variant="outlined"
-                :error="errors.username"
-                required
-                class="icon-input"
-              />
-            </div>
-
+          <form @submit.prevent="onSubmit" class="login-form">
             <!-- Email Input -->
             <div class="input-group">
               <div class="input-icon">
@@ -116,12 +75,12 @@
                 </svg>
               </div>
               <BaseInput
-                v-model="form.email"
+                v-model="email"
                 type="email"
-                placeholder="Email address"
+                placeholder="Email or username"
                 size="lg"
                 variant="outlined"
-                :error="errors.email"
+                :error="emailError"
                 required
                 class="icon-input"
               />
@@ -137,76 +96,57 @@
                 </svg>
               </div>
               <BaseInput
-                v-model="form.password"
+                v-model="password"
                 type="password"
                 placeholder="Password"
                 size="lg"
                 variant="outlined"
-                :error="errors.password"
+                :error="passwordError"
                 required
                 class="icon-input"
               />
             </div>
 
-            <!-- Confirm Password Input -->
-            <div class="input-group">
-              <div class="input-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                  <circle cx="12" cy="16" r="1"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  <path d="M9 16l2 2 4-4"/>
-                </svg>
-              </div>
-              <BaseInput
-                v-model="form.password_confirmation"
-                type="password"
-                placeholder="Confirm Password"
-                size="lg"
-                variant="outlined"
-                :error="errors.password_confirmation"
-                required
-                class="icon-input"
-              />
-            </div>
-
-            <!-- Terms Checkbox -->
-            <div class="terms-section">
-              <label class="terms-checkbox">
-                <input type="checkbox" v-model="agreeToTerms" required>
+            <!-- Remember Me & Forgot Password -->
+            <div class="form-options">
+              <label class="remember-me">
+                <input type="checkbox" v-model="rememberMe">
                 <span class="checkmark"></span>
-                <span class="terms-text">
-                  I agree to the
-                  <a href="#" class="terms-link">Terms of Service</a> and
-                  <a href="#" class="terms-link">Privacy Policy</a>
-                </span>
+                <span class="label-text">Remember me</span>
               </label>
+              <button
+                type="button"
+                class="forgot-password"
+                @click="handleForgotPassword"
+              >
+                Forgot password?
+              </button>
             </div>
 
-            <!-- Register Button -->
+            <!-- Login Button -->
             <BaseButton
               type="submit"
               variant="primary"
               size="lg"
-              :loading="loading"
-              loading-text="Creating account..."
+              :loading="authStore.loading"
+              loading-text="Signing in..."
               full-width
-              class="register-btn"
+              class="login-btn"
             >
-              <span class="btn-text">Create Account</span>
+              <span class="btn-text">Sign In</span>
             </BaseButton>
 
             <!-- Error Message -->
-            <div v-if="error" class="error-message animate-slide-up">
+            <div v-if="authStore.error" class="error-message animate-slide-up">
               <div class="error-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
               <div class="error-content">
-                <p class="error-text">{{ error }}</p>
+                <p class="error-text">{{ authStore.error }}</p>
                 <button
-                  v-if="loading"
+                  v-if="authStore.loading"
                   type="button"
                   @click="resetLoading"
                   class="error-action"
@@ -217,21 +157,21 @@
             </div>
 
             <!-- Success Message -->
-            <div v-if="registerSuccess" class="success-message animate-slide-up">
+            <div v-if="loginSuccess" class="success-message animate-slide-up">
               <div class="success-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
-              <p class="success-text">Account created successfully! Redirecting...</p>
+              <p class="success-text">Welcome back! Redirecting...</p>
             </div>
 
-            <!-- Social Register Divider -->
+            <!-- Social Login Divider -->
             <div class="divider">
-              <span class="divider-text">Or register with</span>
+              <span class="divider-text">Or continue with</span>
             </div>
 
-            <!-- Social Register Buttons -->
+            <!-- Social Login Buttons -->
             <div class="social-buttons">
               <button type="button" class="social-btn google-btn">
                 <svg viewBox="0 0 24 24">
@@ -252,11 +192,11 @@
             </div>
           </form>
 
-          <!-- Login Link -->
-          <div class="login-link">
-            <p>Already have an account?
-              <router-link to="/login" class="login-btn">
-                Sign in here
+          <!-- Sign Up Link -->
+          <div class="signup-link">
+            <p>Don't have an account?
+              <router-link to="/register" class="signup-btn">
+                Create one here
               </router-link>
             </p>
           </div>
@@ -267,101 +207,50 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import BaseInput from '../components/BaseInput.vue'
-import BaseButton from '../components/BaseButton.vue'
-import { useAuthStore } from '../stores/auth'
+import BaseInput from '../../components/BaseInput.vue'
+import BaseButton from '../../components/BaseButton.vue'
+import { useAuthStore } from '../../stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
-const form = reactive({
-  name: '',
-  username: '',
-  email: '',
-  password: '',
-  password_confirmation: ''
-})
-
-const errors = reactive({
-  name: '',
-  username: '',
-  email: '',
-  password: '',
-  password_confirmation: ''
-})
-
-const loading = ref(false)
-const error = ref('')
-const registerSuccess = ref(false)
-const agreeToTerms = ref(false)
+const email = ref('')
+const password = ref('')
+const emailError = ref('')
+const passwordError = ref('')
+const loginSuccess = ref(false)
+const rememberMe = ref(false)
 
 const resetLoading = () => {
-  loading.value = false
-  error.value = ''
+  authStore.resetLoading()
+}
+
+const handleForgotPassword = () => {
+  // TODO: Implement forgot password functionality
+  alert('Forgot password functionality coming soon!')
 }
 
 const validateForm = () => {
-  // Reset errors
-  Object.keys(errors).forEach(key => {
-    errors[key] = ''
-  })
-  error.value = ''
+  emailError.value = ''
+  passwordError.value = ''
 
   let isValid = true
 
-  // Name validation
-  if (!form.name.trim()) {
-    errors.name = 'Name is required'
+  if (!email.value.trim()) {
+    emailError.value = 'Email is required'
     isValid = false
-  } else if (form.name.trim().length < 2) {
-    errors.name = 'Name must be at least 2 characters'
-    isValid = false
-  }
-
-  // Username validation
-  if (!form.username.trim()) {
-    errors.username = 'Username is required'
-    isValid = false
-  } else if (form.username.length < 3) {
-    errors.username = 'Username must be at least 3 characters'
-    isValid = false
-  } else if (!/^[a-zA-Z0-9_]+$/.test(form.username)) {
-    errors.username = 'Username can only contain letters, numbers, and underscores'
+  } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+    emailError.value = 'Please enter a valid email'
     isValid = false
   }
 
-  // Email validation
-  if (!form.email.trim()) {
-    errors.email = 'Email is required'
+  if (!password.value) {
+    passwordError.value = 'Password is required'
     isValid = false
-  } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-    errors.email = 'Please enter a valid email'
-    isValid = false
-  }
-
-  // Password validation
-  if (!form.password) {
-    errors.password = 'Password is required'
-    isValid = false
-  } else if (form.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters'
-    isValid = false
-  }
-
-  // Confirm password validation
-  if (!form.password_confirmation) {
-    errors.password_confirmation = 'Please confirm your password'
-    isValid = false
-  } else if (form.password !== form.password_confirmation) {
-    errors.password_confirmation = 'Passwords do not match'
-    isValid = false
-  }
-
-  // Terms validation
-  if (!agreeToTerms.value) {
-    error.value = 'You must agree to the Terms of Service and Privacy Policy'
+  } else if (password.value.length < 6) {
+    passwordError.value = 'Password must be at least 6 characters'
     isValid = false
   }
 
@@ -371,27 +260,20 @@ const validateForm = () => {
 const onSubmit = async () => {
   if (!validateForm()) return
 
-  loading.value = true
-  error.value = ''
-
   try {
-    const result = await authStore.register(form)
+    const result = await authStore.login({ email: email.value, password: password.value })
     if (result.success) {
-      registerSuccess.value = true
+      loginSuccess.value = true
       setTimeout(() => {
-        router.push('/')
+        router.push('/dashboard')
       }, 1500)
-    } else {
-      error.value = result.error
     }
   } catch {
-    error.value = 'Registration failed. Please try again.'
-  } finally {
-    loading.value = false
+    // Error is handled by the store
   }
 }
 
-// Watch for successful registration and redirect
+// Watch for successful login and redirect
 import { watch } from 'vue'
 watch(() => authStore.isAuthenticated, (isAuth) => {
   if (isAuth) {
@@ -401,8 +283,8 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
 </script>
 
 <style scoped>
-/* Register Container */
-.register-container {
+/* Login Container */
+.login-container {
   min-height: 100vh;
   position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -574,7 +456,7 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
   font-weight: 400;
 }
 
-.register-form {
+.login-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -608,20 +490,22 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
   color: #667eea;
 }
 
-/* Terms Section */
-.terms-section {
+/* Form Options */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 0.5rem 0;
 }
 
-.terms-checkbox {
+.remember-me {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   cursor: pointer;
   user-select: none;
-  line-height: 1.5;
 }
 
-.terms-checkbox input {
+.remember-me input {
   display: none;
 }
 
@@ -630,19 +514,17 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
   height: 18px;
   border: 2px solid #cbd5e0;
   border-radius: 4px;
-  margin-right: 0.75rem;
-  margin-top: 0.125rem;
+  margin-right: 0.5rem;
   position: relative;
   transition: all 0.3s ease;
-  flex-shrink: 0;
 }
 
-.terms-checkbox input:checked + .checkmark {
+.remember-me input:checked + .checkmark {
   background: linear-gradient(45deg, #667eea, #764ba2);
   border-color: #667eea;
 }
 
-.terms-checkbox input:checked + .checkmark::after {
+.remember-me input:checked + .checkmark::after {
   content: '✓';
   position: absolute;
   top: 50%;
@@ -653,44 +535,56 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
   font-weight: bold;
 }
 
-.terms-text {
-  font-size: 0.85rem;
+.label-text {
+  font-size: 0.9rem;
   color: #4a5568;
-  line-height: 1.4;
 }
 
-.terms-link {
+.forgot-password {
   color: #667eea;
-  text-decoration: none;
+  font-size: 0.9rem;
   font-weight: 500;
+  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.terms-link:hover {
+.forgot-password:hover {
   color: #5a6fd8;
   text-decoration: underline;
 }
 
-/* Register Button */
-.register-btn {
+/* Login Button */
+.login-btn {
   background: linear-gradient(45deg, #667eea, #764ba2) !important;
   border: none !important;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
   padding: 1rem 2rem !important;
-  margin-top: 0.5rem;
 }
 
-.register-btn:hover {
+.login-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
 }
 
-.register-btn :deep(.btn-text) {
+.login-btn :deep(.btn-text) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.btn-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.login-btn:hover .btn-arrow {
+  transform: translateX(4px);
 }
 
 /* Messages */
@@ -801,8 +695,8 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
   border-color: #1877F2;
 }
 
-/* Login Link */
-.login-link {
+/* Signup Link */
+.signup-link {
   text-align: center;
   padding-top: 1.5rem;
   border-top: 1px solid #e2e8f0;
@@ -810,54 +704,16 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
   font-size: 0.9rem;
 }
 
-.login-btn {
+.signup-btn {
   color: #667eea;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
-.login-btn:hover {
+.signup-btn:hover {
   color: #5a6fd8;
   text-decoration: underline;
-}
-
-/* Animations */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-@keyframes slideLeft {
-  from { transform: translateX(-50px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideRight {
-  from { transform: translateX(50px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.animate-slide-left {
-  animation: slideLeft 0.8s ease-out;
-}
-
-.animate-slide-right {
-  animation: slideRight 0.8s ease-out;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.5s ease-out;
 }
 
 /* Responsive Design */
@@ -886,8 +742,9 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
     flex-direction: column;
   }
 
-  .terms-section {
-    margin: 1rem 0;
+  .form-options {
+    flex-direction: column;
+    gap: 1rem;
   }
 }
 

@@ -1,11 +1,11 @@
 <template>
   <div id="app" class="min-h-screen bg-gray-50">
     <!-- Show loading screen during auth initialization -->
-    <AuthLoading 
-      v-if="authStore.loading && !authStore.isAuthenticated" 
-      message="Initializing..." 
+    <AuthLoading
+      v-if="authStore.loading && !authStore.isAuthenticated"
+      message="Initializing..."
     />
-    
+
     <!-- Main app content -->
     <router-view v-else />
   </div>

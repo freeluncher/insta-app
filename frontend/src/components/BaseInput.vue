@@ -139,7 +139,7 @@ const inputClasses = computed(() => {
     'bg-white',
     'text-gray-900',
     'placeholder-gray-500',
-    'focus:placeholder-gray-400'
+    'focus:placeholder-gray-400',
   ]
 
   // Size classes

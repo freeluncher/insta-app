@@ -3,6 +3,7 @@ import axios from 'axios'
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:8000' // Laravel backend URL
 axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.timeout = 10000 // 10 second timeout
 
 // Add token to requests if available
 axios.interceptors.request.use(

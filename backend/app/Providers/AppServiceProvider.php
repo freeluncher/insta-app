@@ -2,21 +2,23 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Http\Repositories\UserRepositoryInterface;
-use App\Http\Repositories\UserRepository;
-use App\Http\Services\AuthServiceInterface;
-use App\Http\Services\AuthService;
-use App\Services\PostServiceInterface;
-use App\Services\PostService;
-use App\Repositories\LikeRepositoryInterface;
-use App\Repositories\LikeRepository;
-use App\Services\LikeServiceInterface;
-use App\Services\LikeService;
-use App\Repositories\CommentRepositoryInterface;
 use App\Repositories\CommentRepository;
-use App\Services\CommentServiceInterface;
+use App\Repositories\Interfaces\CommentRepositoryInterface;
+use App\Repositories\Interfaces\LikeRepositoryInterface;
+use App\Repositories\Interfaces\PostRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\LikeRepository;
+use App\Repositories\PostRepository;
+use App\Repositories\UserRepository;
+use App\Services\AuthService;
 use App\Services\CommentService;
+use App\Services\Interfaces\AuthServiceInterface;
+use App\Services\Interfaces\CommentServiceInterface;
+use App\Services\Interfaces\LikeServiceInterface;
+use App\Services\Interfaces\PostServiceInterface;
+use App\Services\LikeService;
+use App\Services\PostService;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

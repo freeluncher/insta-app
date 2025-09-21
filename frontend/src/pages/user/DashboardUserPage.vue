@@ -230,8 +230,20 @@
                 :key="comment.id"
                 class="comment"
               >
-                <span class="comment-username">{{ comment.user.username }}</span>
-                <span class="comment-text">{{ comment.content }}</span>
+                <div class="comment-content">
+                  <span class="comment-username">{{ comment.user.username }}</span>
+                  <span class="comment-text">{{ comment.content }}</span>
+                </div>
+                <button
+                  v-if="authStore.user && authStore.user.id === comment.user.id"
+                  @click="deleteCommentFromPost(comment.id, post.id)"
+                  class="delete-comment-btn"
+                  title="Delete comment"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
               </div>
             </div>
 
@@ -308,7 +320,8 @@ import {
   getLikesCount,
   isPostLiked,
   addComment,
-  getComments
+  getComments,
+  deleteComment
 } from '../../services/postService.js'
 
 const router = useRouter()
@@ -559,6 +572,25 @@ const addCommentToPost = async (postId) => {
     }
   } catch (error) {
     console.error('Error adding comment:', error)
+  }
+}
+
+const deleteCommentFromPost = async (commentId, postId) => {
+  if (!confirm('Are you sure you want to delete this comment?')) {
+    return
+  }
+
+  try {
+    await deleteComment(commentId)
+    const post = posts.value.find(p => p.id === postId)
+    if (post) {
+      // Remove comment from local state
+      post.comments = post.comments.filter(comment => comment.id !== commentId)
+      post.commentsCount = Math.max(0, post.commentsCount - 1)
+    }
+  } catch (error) {
+    console.error('Error deleting comment:', error)
+    alert('Failed to delete comment. Please try again.')
   }
 }
 
@@ -1194,6 +1226,14 @@ const onPostCreated = (newPost) => {
 .comment {
   margin-bottom: 0.25rem;
   line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.comment-content {
+  flex: 1;
 }
 
 .comment-username {
@@ -1204,6 +1244,28 @@ const onPostCreated = (newPost) => {
 
 .comment-text {
   color: #374151;
+}
+
+.delete-comment-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.comment:hover .delete-comment-btn {
+  opacity: 1;
+}
+
+.delete-comment-btn:hover {
+  color: #ef4444;
+  background: #fef2f2;
 }
 
 .post-time {

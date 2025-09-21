@@ -193,13 +193,13 @@
               <button
                 v-if="post.commentsCount > 2"
                 class="view-comments-btn"
-                @click="viewAllComments(post.id)"
+                @click="toggleCommentsView(post.id)"
               >
-                View all {{ post.commentsCount }} comments
+                {{ expandedComments[post.id] ? 'Hide comments' : `View all ${post.commentsCount} comments` }}
               </button>
 
               <div
-                v-for="comment in post.comments.slice(0, 2)"
+                v-for="comment in (expandedComments[post.id] ? post.comments : post.comments.slice(0, 2))"
                 :key="comment.id"
                 class="comment"
               >
@@ -297,6 +297,7 @@ const newComments = reactive({})
 const posts = ref([])
 const showCreatePostModal = ref(false)
 const commentRefs = ref({})
+const expandedComments = reactive({})
 
 // Navigation tabs
 const navigationTabs = ref([
@@ -479,9 +480,13 @@ const sharePost = (postId) => {
   console.log('Share post:', postId)
 }
 
-const viewAllComments = (postId) => {
-  // Navigate to comments page
-  console.log('View all comments:', postId)
+const toggleCommentsView = (postId) => {
+  // Toggle expanded state for comments
+  if (expandedComments[postId]) {
+    expandedComments[postId] = false
+  } else {
+    expandedComments[postId] = true
+  }
 }
 
 const addCommentToPost = async (postId) => {
@@ -615,7 +620,7 @@ const fetchPosts = async () => {
           likesCount: likesResponse.data.count,
           isLiked: isLikedResponse.data.liked,
           isBookmarked: false, // Not implemented yet
-          comments: commentsResponse.data.slice(0, 2), // Show first 2 comments
+          comments: commentsResponse.data, // Store all comments
           commentsCount: commentsResponse.data.length,
           createdAt: new Date(post.created_at)
         }
@@ -626,7 +631,7 @@ const fetchPosts = async () => {
           likesCount: 0,
           isLiked: false,
           isBookmarked: false,
-          comments: [],
+          comments: [], // No comments available
           commentsCount: 0,
           createdAt: new Date(post.created_at)
         }

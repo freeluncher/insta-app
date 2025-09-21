@@ -395,7 +395,7 @@ const onSubmit = async () => {
 import { watch } from 'vue'
 watch(() => authStore.isAuthenticated, (isAuth) => {
   if (isAuth) {
-    router.push('/')
+    router.push('/dashboard')
   }
 })
 </script>

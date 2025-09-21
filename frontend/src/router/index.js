@@ -12,8 +12,12 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'Home',
-      component: () => import('../pages/HomePage.vue'),
+      redirect: '/dashboard'
+    },
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import('../pages/DashboardUserPage.vue'),
       meta: { requiresAuth: true }
     },
     {
@@ -37,8 +41,8 @@ router.beforeEach((to, from, next) => {
     // User is not authenticated, redirect to login
     next('/login')
   } else if (!to.meta.requiresAuth && isAuthenticated && to.name !== 'Login') {
-    // User is authenticated and trying to access auth pages, redirect to home
-    next('/')
+    // User is authenticated and trying to access auth pages, redirect to dashboard
+    next('/dashboard')
   } else {
     // Allow navigation
     next()

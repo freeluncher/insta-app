@@ -265,7 +265,7 @@ const onSubmit = async () => {
     if (result.success) {
       loginSuccess.value = true
       setTimeout(() => {
-        router.push('/')
+        router.push('/dashboard')
       }, 1500)
     }
   } catch {
@@ -277,7 +277,7 @@ const onSubmit = async () => {
 import { watch } from 'vue'
 watch(() => authStore.isAuthenticated, (isAuth) => {
   if (isAuth) {
-    router.push('/')
+    router.push('/dashboard')
   }
 })
 </script>
